@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>
+    {{ page_title }}
+    {%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}
+    {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  {{ content_for_header }}
+
+  {{ 'base.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+
+  <style>
+    :root {
+      --bg:   {{ settings.color_background }};
+      --fg:   {{ settings.color_text }};
+      --maxw: {{ settings.max_width }}px;
+    }
+  </style>
+</head>
+
+<body class="page-wrapper">
+
+  {%- liquid
+    assign cart_count = cart.item_count
+  -%}
+
+  <header class="site-header" role="banner">
+    <div class="container">
+      <div class="site-header__inner">
+        <p class="site-header__wordmark">
+          <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} — Home">TDS</a>
+        </p>
+      </div>
+
+      <a href="{{ routes.cart_url }}"
+         class="site-header__cart"
+         aria-label="{{ 'header.cart' | t }} ({{ cart_count }} {{ 'header.items' | t }})">
+        {%- if cart_count > 0 -%}
+          {{ 'header.cart' | t }} ({{ cart_count }})
+        {%- else -%}
+          {{ 'header.cart' | t }}
+        {%- endif -%}
+      </a>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-main" role="main" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+    </div>
+  </footer>
+
+</body>
+</html>

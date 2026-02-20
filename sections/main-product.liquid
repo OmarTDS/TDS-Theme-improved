@@ -1,0 +1,131 @@
+{% comment %}
+  main-product.liquid
+  Full product page section — title, price, image, variant selector, add-to-cart, description.
+{% endcomment %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign has_multiple_variants = false
+  if product.variants.size > 1
+    assign has_multiple_variants = true
+  endif
+  assign has_images  = false
+  if product.images.size > 0
+    assign has_images = true
+  endif
+  assign has_thumbs = false
+  if product.images.size > 1
+    assign has_thumbs = true
+  endif
+-%}
+
+<section class="product-section" aria-label="{{ product.title | escape }}">
+  <div class="container">
+
+    <a href="{{ routes.root_url }}" class="product-back" aria-label="{{ 'product.back' | t }}">
+      &larr; {{ 'product.back' | t }}
+    </a>
+
+    <div class="product-header">
+      <h1 class="product-title">{{ product.title | escape }}</h1>
+      <p class="product-price" aria-live="polite">
+        {% render 'price', product: product, variant: current_variant %}
+      </p>
+    </div>
+
+    {%- if has_images -%}
+      <div class="product-media">
+        <div class="product-media__main">
+          {{
+            current_variant.featured_image
+            | default: product.featured_image
+            | image_url: width: 1000
+            | image_tag:
+              id: 'ProductMainImage',
+              loading: 'eager',
+              widths: '480, 640, 800, 1000',
+              alt: current_variant.featured_image.alt | default: product.featured_image.alt | default: product.title
+          }}
+        </div>
+
+        {%- if has_thumbs -%}
+          <div class="product-thumbs" role="list" aria-label="{{ 'product.thumbnails' | t }}">
+            {%- for image in product.images -%}
+              <div class="product-thumb"
+                   role="listitem"
+                   tabindex="0"
+                   aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                   aria-label="{{ 'product.thumbnail_n' | t: n: forloop.index }}"
+                   data-src="{{ image | image_url: width: 1000 }}"
+                   data-srcset="{{ image | image_url: width: 480 }} 480w, {{ image | image_url: width: 800 }} 800w, {{ image | image_url: width: 1000 }} 1000w"
+                   data-alt="{{ image.alt | default: product.title | escape }}">
+                {{
+                  image
+                  | image_url: width: 120
+                  | image_tag:
+                    loading: 'lazy',
+                    alt: image.alt | default: product.title
+                }}
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- form 'product', product, class: 'product-form', novalidate: 'novalidate' -%}
+
+      <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+      {%- if has_multiple_variants -%}
+        <div class="product-form__variants">
+          {% render 'variant-selector', product: product, current_variant: current_variant %}
+        </div>
+      {%- endif -%}
+
+      <div class="product-form__quantity">
+        <label for="Quantity">{{ 'product.quantity' | t }}</label>
+        <input type="number"
+               id="Quantity"
+               name="quantity"
+               class="quantity-input"
+               value="1"
+               min="1"
+               aria-label="{{ 'product.quantity' | t }}">
+      </div>
+
+      <button type="submit"
+              class="product-form__submit"
+              data-add-text="{{ 'product.add_to_cart' | t }}"
+              data-sold-text="{{ 'product.sold_out' | t }}"
+              {%- unless current_variant.available -%} disabled{%- endunless -%}>
+        {%- if current_variant.available -%}
+          {{ 'product.add_to_cart' | t }}
+        {%- else -%}
+          {{ 'product.sold_out' | t }}
+        {%- endif -%}
+      </button>
+
+    {%- endform -%}
+
+    {%- if product.description != blank -%}
+      <div class="product-description">
+        {{ product.description }}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Product"
+    }
+  ]
+}
+{% endschema %}

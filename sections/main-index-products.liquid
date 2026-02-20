@@ -1,0 +1,93 @@
+{% comment %}
+  main-index-products.liquid
+  Renders the product selection view on /.
+  Shows products from "frontpage" collection if it exists; falls back to collections.all.
+{% endcomment %}
+
+{%- liquid
+  if collections['frontpage'] != blank
+    assign product_list = collections['frontpage'].products
+  else
+    assign product_list = collections.all.products
+  endif
+
+  assign show_images  = section.settings.show_images
+  assign grid_layout  = section.settings.layout
+-%}
+
+<section class="index-products" aria-label="{{ 'index.products_label' | t }}">
+  <div class="container">
+
+    <h1 class="visually-hidden">{{ shop.name }}</h1>
+
+    {%- if product_list.size == 0 -%}
+      <p class="cart-empty">{{ 'index.no_products' | t }}</p>
+    {%- else -%}
+
+      <ul class="index-products__list{% if grid_layout == 'grid' %} index-products__list--grid{% endif %}"
+          role="list">
+
+        {%- for product in product_list -%}
+          <li class="index-products__item">
+            <a href="{{ product.url }}"
+               aria-label="{{ product.title | escape }}{% if product.price %}, {{ product.price | money }}{% endif %}">
+
+              {%- if show_images and product.featured_image -%}
+                <div class="index-products__image-wrap">
+                  {{
+                    product.featured_image
+                    | image_url: width: 640
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '320, 480, 640',
+                      alt: product.featured_image.alt | default: product.title
+                  }}
+                </div>
+              {%- elsif show_images -%}
+                {%- comment %} Placeholder when product has no image {%- endcomment %}
+                <div class="index-products__image-wrap" aria-hidden="true"></div>
+              {%- endif -%}
+
+              <p class="index-products__title">{{ product.title | escape }}</p>
+              <p class="index-products__price">{% render 'price', product: product %}</p>
+
+            </a>
+          </li>
+        {%- endfor -%}
+
+      </ul>
+
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product list",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_images",
+      "label": "Show product images",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "grid",    "label": "2-column grid" }
+      ],
+      "default": "stacked"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product list"
+    }
+  ]
+}
+{% endschema %}

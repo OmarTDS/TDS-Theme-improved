@@ -1,0 +1,38 @@
+{
+  "general": {
+    "meta": {
+      "page": "Page {{ page }}"
+    }
+  },
+  "header": {
+    "cart": "Cart",
+    "items": "items"
+  },
+  "index": {
+    "products_label": "Products",
+    "no_products": "No products available."
+  },
+  "product": {
+    "back": "All products",
+    "quantity": "Qty",
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "thumbnails": "Product images",
+    "thumbnail_n": "Image {{ n }}"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty. ",
+    "continue_shopping": "Continue shopping",
+    "product": "Product",
+    "quantity": "Qty",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "update": "Update",
+    "remove": "Remove",
+    "checkout": "Checkout",
+    "items_label": "Cart items",
+    "quantity_for": "Quantity for {{ title }}",
+    "remove_for": "Remove {{ title }}"
+  }
+}

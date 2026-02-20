@@ -1,0 +1,98 @@
+{% comment %}
+  main-cart.liquid
+  Minimal cart page: line items, qty update, remove, subtotal, checkout.
+  Uses /cart/update for quantity changes; /cart/change for individual removes.
+{% endcomment %}
+
+<section class="cart-section" aria-label="{{ 'cart.title' | t }}">
+  <div class="container">
+
+    <h1 class="cart-section__heading">{{ 'cart.title' | t }}</h1>
+
+    {%- if cart.item_count == 0 -%}
+
+      <p class="cart-empty">
+        {{ 'cart.empty' | t }}
+        <a href="{{ routes.root_url }}">{{ 'cart.continue_shopping' | t }}</a>
+      </p>
+
+    {%- else -%}
+
+      {% comment %} Main form: update quantities for all items + checkout {% endcomment %}
+      <form action="{{ routes.cart_update_url }}" method="post" novalidate>
+
+        <table class="cart-items" aria-label="{{ 'cart.items_label' | t }}">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'cart.product' | t }}</th>
+              <th scope="col">{{ 'cart.quantity' | t }}</th>
+              <th scope="col" style="text-align:right">{{ 'cart.total' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for item in cart.items -%}
+              <tr>
+                <td>
+                  <p class="cart-item__title">{{ item.product.title | escape }}</p>
+                  {%- unless item.variant.title == 'Default Title' -%}
+                    <p class="cart-item__variant">{{ item.variant.title | escape }}</p>
+                  {%- endunless -%}
+                  <p>{{ item.final_price | money }}</p>
+
+                  {% comment %} Separate mini-form for remove so it doesn't conflict with qty input {% endcomment %}
+                  <form method="post" action="{{ routes.cart_change_url }}" style="display:inline">
+                    <input type="hidden" name="line" value="{{ forloop.index }}">
+                    <input type="hidden" name="quantity" value="0">
+                    <button type="submit"
+                            class="cart-item__remove"
+                            aria-label="{{ 'cart.remove_for' | t: title: item.product.title | escape }}">
+                      {{ 'cart.remove' | t }}
+                    </button>
+                  </form>
+                </td>
+                <td>
+                  <input type="number"
+                         class="cart-qty-input"
+                         name="updates[]"
+                         value="{{ item.quantity }}"
+                         min="1"
+                         aria-label="{{ 'cart.quantity_for' | t: title: item.product.title | escape }}">
+                </td>
+                <td style="text-align:right">{{ item.final_line_price | money }}</td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+
+        <button type="submit" class="cart-update-btn" style="margin-bottom: var(--space-4)">
+          {{ 'cart.update' | t }}
+        </button>
+
+        <div class="cart-subtotal">
+          <span class="cart-subtotal__label">{{ 'cart.subtotal' | t }}</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+
+        <a href="/checkout" class="cart-checkout-btn" style="text-align:center; display:block">
+          {{ 'cart.checkout' | t }}
+        </a>
+
+      </form>
+
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "tag": "section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Cart"
+    }
+  ]
+}
+{% endschema %}
