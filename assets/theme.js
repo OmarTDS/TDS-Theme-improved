@@ -103,6 +103,8 @@
   var contentEl = null;
   var closeBtn = null;
   var previouslyFocused = null;
+  var productHandles = [];
+  var currentProductIndex = 0;
 
   function formatMoney(cents) {
     var amount = (cents / 100).toFixed(2);
@@ -202,6 +204,43 @@
       '</div>';
 
     contentEl.innerHTML = html;
+
+    /* Render navigation if multiple products */
+    if (productHandles.length > 1) {
+      var total = productHandles.length;
+      var dotsCount = Math.min(total, 3);
+      var windowStart = Math.max(0, Math.min(currentProductIndex - 1, total - dotsCount));
+      var dotsHtml = '';
+      for (var i = windowStart; i < windowStart + dotsCount; i++) {
+        dotsHtml += '<span class="quickview-dot' + (i === currentProductIndex ? ' quickview-dot--active' : '') + '"></span>';
+      }
+      var navHtml =
+        '<div class="quickview-nav">' +
+          '<button class="quickview-nav__btn" id="quickview-prev" aria-label="Previous product"' +
+            (currentProductIndex === 0 ? ' disabled' : '') + '>&#8592;</button>' +
+          '<div class="quickview-dots">' + dotsHtml + '</div>' +
+          '<button class="quickview-nav__btn" id="quickview-next" aria-label="Next product"' +
+            (currentProductIndex >= total - 1 ? ' disabled' : '') + '>&#8594;</button>' +
+        '</div>';
+      contentEl.insertAdjacentHTML('beforeend', navHtml);
+
+      var prevBtn = contentEl.querySelector('#quickview-prev');
+      var nextBtn = contentEl.querySelector('#quickview-next');
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+          currentProductIndex--;
+          var p = productHandles[currentProductIndex];
+          openQuickView(p.handle, p.url);
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+          currentProductIndex++;
+          var p = productHandles[currentProductIndex];
+          openQuickView(p.handle, p.url);
+        });
+      }
+    }
 
     /* Wire up variant select */
     var select = contentEl.querySelector('.variant-select');
@@ -323,10 +362,18 @@
 
     /* Wire up product card links */
     document.querySelectorAll('[data-quickview]').forEach(function (link) {
+      var handle = link.dataset.productHandle;
+      if (handle) {
+        var existing = productHandles.some(function (p) { return p.handle === handle; });
+        if (!existing) {
+          productHandles.push({ handle: handle, url: link.href });
+        }
+      }
       link.addEventListener('click', function (e) {
-        var handle = link.dataset.productHandle;
         if (!handle) return; /* fall through to normal navigation */
         e.preventDefault();
+        currentProductIndex = productHandles.findIndex(function (p) { return p.handle === handle; });
+        if (currentProductIndex < 0) currentProductIndex = 0;
         openQuickView(handle, link.href);
       });
     });
