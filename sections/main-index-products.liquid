@@ -30,6 +30,8 @@
         {%- for product in product_list -%}
           <li class="index-products__item">
             <a href="{{ product.url }}"
+               data-quickview
+               data-product-handle="{{ product.handle }}"
                aria-label="{{ product.title | escape }}{% if product.price %}, {{ product.price | money }}{% endif %}">
 
               {%- if show_images and product.featured_image -%}
@@ -40,8 +42,20 @@
                     | image_tag:
                       loading: 'lazy',
                       widths: '320, 480, 640',
+                      class: 'index-products__image-primary',
                       alt: product.featured_image.alt | default: product.title
                   }}
+                  {%- if product.images[1] -%}
+                    {{
+                      product.images[1]
+                      | image_url: width: 640
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '320, 480, 640',
+                        class: 'index-products__image-hover',
+                        alt: product.images[1].alt | default: product.title
+                    }}
+                  {%- endif -%}
                 </div>
               {%- elsif show_images -%}
                 {%- comment %} Placeholder when product has no image {%- endcomment %}
