@@ -1,0 +1,94 @@
+{% comment %}
+  variant-selector.liquid
+  Usage: {% render 'variant-selector', product: product, current_variant: current_variant %}
+  Renders button-style selectors for <= 6 variants, otherwise falls back to a <select>.
+{% endcomment %}
+
+{%- assign option_limit = 6 -%}
+
+{%- for option in product.options_with_values -%}
+  <div class="product-form__option" data-option-index="{{ forloop.index0 }}">
+    <label>{{ option.name | escape }}</label>
+
+    {%- if option.values.size <= option_limit -%}
+
+      <div class="variant-buttons" role="group" aria-label="{{ option.name | escape }}">
+        {%- for value in option.values -%}
+          {%- liquid
+            # Find variant matching this option value AND the other currently-selected option values.
+            # Falls back to the first variant with this value if the combination doesn't exist.
+            assign variant_for_value = nil
+            for variant in product.variants
+              if option.position == 1
+                if variant.option1 == value and variant.option2 == current_variant.option2 and variant.option3 == current_variant.option3
+                  assign variant_for_value = variant
+                  break
+                endif
+              elsif option.position == 2
+                if variant.option2 == value and variant.option1 == current_variant.option1 and variant.option3 == current_variant.option3
+                  assign variant_for_value = variant
+                  break
+                endif
+              elsif option.position == 3
+                if variant.option3 == value and variant.option1 == current_variant.option1 and variant.option2 == current_variant.option2
+                  assign variant_for_value = variant
+                  break
+                endif
+              endif
+            endfor
+            if variant_for_value == nil
+              for variant in product.variants
+                case option.position
+                  when 1
+                    if variant.option1 == value
+                      assign variant_for_value = variant
+                      break
+                    endif
+                  when 2
+                    if variant.option2 == value
+                      assign variant_for_value = variant
+                      break
+                    endif
+                  when 3
+                    if variant.option3 == value
+                      assign variant_for_value = variant
+                      break
+                    endif
+                endcase
+              endfor
+            endif
+          -%}
+          <button type="button"
+                  class="variant-btn"
+                  data-variant-id="{{ variant_for_value.id }}"
+                  data-price="{{ variant_for_value.price }}"
+                  data-price-formatted="{{ variant_for_value.price | money }}"
+                  data-available="{{ variant_for_value.available }}"
+                  aria-pressed="{% if current_variant.id == variant_for_value.id %}true{% else %}false{% endif %}"
+                  {%- unless variant_for_value.available %} aria-disabled="true"{%- endunless %}>
+            {{ value | escape }}
+          </button>
+        {%- endfor -%}
+      </div>
+
+    {%- else -%}
+
+      <select class="variant-select"
+              name="id"
+              aria-label="{{ option.name | escape }}">
+        {%- for variant in product.variants -%}
+          <option value="{{ variant.id }}"
+                  data-price-formatted="{{ variant.price | money }}"
+                  data-available="{{ variant.available }}"
+                  {%- if variant.id == current_variant.id %} selected{%- endif -%}
+                  {%- unless variant.available %} disabled{%- endunless -%}>
+            {{ variant.title | escape }}
+            &ndash;
+            {{ variant.price | money }}
+          </option>
+        {%- endfor -%}
+      </select>
+
+    {%- endif -%}
+  </div>
+{%- endfor -%}

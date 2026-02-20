@@ -1,0 +1,41 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "TDS",
+    "theme_version": "1.0.0",
+    "theme_author": "TDS",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text",
+        "default": "#111111"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "max_width",
+        "label": "Max content width (px)",
+        "min": 480,
+        "max": 720,
+        "step": 20,
+        "default": 580
+      }
+    ]
+  }
+]

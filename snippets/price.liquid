@@ -1,0 +1,21 @@
+{% comment %}
+  price.liquid
+  Usage: {% render 'price', product: product %}
+         {% render 'price', product: product, variant: variant %}
+  Renders compare-at price and current price.
+{% endcomment %}
+
+{%- liquid
+  if variant
+    assign active_variant = variant
+  else
+    assign active_variant = product.selected_or_first_available_variant
+  endif
+-%}
+
+{%- if active_variant.compare_at_price > active_variant.price -%}
+  <s aria-hidden="true">{{ active_variant.compare_at_price | money }}</s>
+  <span>{{ active_variant.price | money }}</span>
+{%- else -%}
+  <span>{{ active_variant.price | money }}</span>
+{%- endif -%}
