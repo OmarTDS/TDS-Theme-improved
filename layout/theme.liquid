@@ -65,6 +65,13 @@
       <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
     </div>
   </footer>
+  <div id="quickview-overlay" class="quickview-overlay" hidden
+       role="dialog" aria-modal="true" aria-label="Quick view">
+    <div id="quickview-modal" class="quickview-modal">
+      <button class="quickview-close" id="quickview-close" aria-label="Close">&times;</button>
+      <div id="quickview-content"></div>
+    </div>
+  </div>
 
 </body>
 </html>

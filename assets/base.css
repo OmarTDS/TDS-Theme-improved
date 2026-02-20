@@ -179,17 +179,32 @@ a:hover {
   overflow: hidden;
   background: #f5f5f5;
   margin-bottom: var(--space-3);
+  position: relative;
 }
 
 .index-products__image-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
 }
 
-.index-products__item a:hover .index-products__image-wrap img {
-  opacity: 0.85;
+.index-products__image-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
+
+.index-products__item a:hover .index-products__image-hover {
+  opacity: 1;
+}
+
+.index-products__item a:hover .index-products__image-primary {
+  opacity: 0;
 }
 
 .index-products__title {
@@ -410,7 +425,181 @@ a:hover {
   margin-top: var(--space-3);
 }
 
-/* ─── Cart page ──────────────────────────────────────────── */
+/* ─── Quick-view modal ───────────────────────────────────── */
+.quickview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.quickview-overlay[hidden] {
+  display: none;
+}
+
+.quickview-modal {
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+@media (max-width: 520px) {
+  .quickview-modal {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quickview-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 1.2rem;
+  color: var(--fg);
+  line-height: 1;
+  z-index: 1;
+  padding: var(--space-1);
+}
+
+.quickview-close:hover {
+  color: var(--muted);
+}
+
+.quickview-modal__image-wrap {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.quickview-modal__image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.quickview-modal__info {
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.quickview-modal__title {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+.quickview-modal__price {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: var(--space-4);
+}
+
+.quickview-modal__variants {
+  margin-bottom: var(--space-4);
+}
+
+.quickview-modal__variants label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+  color: var(--muted);
+}
+
+.quickview-modal__quantity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.quickview-modal__quantity label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.quickview-modal__atc {
+  display: block;
+  width: 100%;
+  appearance: none;
+  background: var(--fg);
+  color: var(--bg);
+  border: 1px solid var(--fg);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  margin-bottom: var(--space-4);
+}
+
+.quickview-modal__atc:hover {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.quickview-modal__atc:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quickview-modal__message {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: var(--space-3);
+  min-height: 1.2em;
+}
+
+.quickview-modal__description {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--muted);
+  padding-top: var(--space-4);
+  border-top: 1px solid #e8e8e8;
+  margin-top: auto;
+}
+
+.quickview-modal__description p + p {
+  margin-top: var(--space-3);
+}
+
+.quickview-modal__view-full {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-decoration: underline;
+  margin-top: var(--space-3);
+}
+
+.quickview-modal__view-full:hover {
+  color: var(--fg);
+}
+
 .cart-section {
   padding-top: var(--space-4);
   padding-bottom: var(--space-6);
